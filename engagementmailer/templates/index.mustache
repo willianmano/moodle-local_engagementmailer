@@ -1,0 +1,73 @@
+<h2 class="pb-0">{{#str}}pluginname, local_engagementmailer{{/str}}</h2>
+
+<div class="text-right mb-3">
+    <a class="btn btn-primary"
+       href="{{config.wwwroot}}/local/engagementmailer/mailer.php?courseid={{courseid}}&action=create">
+    {{#str}}createanewmailer, local_engagementmailer{{/str}}</a>
+</div>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">{{#str}}moment, local_engagementmailer{{/str}}</th>
+        <th scope="col">{{#str}}name, local_engagementmailer{{/str}}</th>
+        <th scope="col">{{#str}}totalemailssent, local_engagementmailer{{/str}}</th>
+        <th scope="col">{{#str}}enabled, local_engagementmailer{{/str}}</th>
+        <th scope="col" style="width: 140px;">{{#str}}actions, local_engagementmailer{{/str}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#mailers}}
+        <tr>
+            <th scope="row">{{id}}</th>
+            <td>{{moment}}</td>
+            <td>{{name}}</td>
+            <td>{{totalemailssent}}</td>
+            <td>
+                {{#enabled}}<span class="badge badge-success">{{#str}}yes{{/str}}</span>{{/enabled}}
+                {{^enabled}}<span class="badge badge-secondary">{{#str}}no{{/str}}</span>{{/enabled}}
+            </td>
+            <td style="text-align: center;">
+                <a href="{{config.wwwroot}}/local/engagementmailer/logs.php?&id={{id}}" class="btn btn-sm btn-success"><i class="fa fa-list"></i></a>
+                <a href="{{config.wwwroot}}/local/engagementmailer/mailer.php?courseid={{courseid}}&id={{id}}&action=update" class="btn btn-sm btn-info"><i class="fa fa-pencil-square-o"></i></a>
+                <form action="{{config.wwwroot}}/local/engagementmailer/mailer.php" method="POST" class="form-singlebutton">
+                    <input type="hidden" name="id" value="{{id}}">
+                    <input type="hidden" name="courseid" value="{{courseid}}">
+                    <input type="hidden" name="action" value="delete">
+                    <button class="btn-delete btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>
+                </form>
+            </td>
+        </tr>
+    {{/mailers}}
+    </tbody>
+</table>
+
+{{#js}}
+    require(['jquery', 'local_engagementmailer/sweetalert'], function($, Swal) {
+        $("body").on("click", ".btn-delete", function(event) {
+            event.preventDefault();
+
+            var button = $(this);
+
+            Swal.fire({
+                title: '{{#str}}confirm_title, local_engagementmailer{{/str}}',
+                text: '{{#str}}confirm_msg, local_engagementmailer{{/str}}',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '{{#str}}confirm_yes, local_engagementmailer{{/str}}',
+                cancelButtonText: '{{#str}}confirm_no, local_engagementmailer{{/str}}'
+            }).then(function(result) {
+                if (result.value) {
+                    const form = button.closest("form");
+
+                    form.append('<input type="hidden" name="sesskey" value="{{config.sesskey}}">');
+
+                    form.submit();
+                }
+            });
+        });
+    });
+{{/js}}
